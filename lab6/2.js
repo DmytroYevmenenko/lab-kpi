@@ -1,4 +1,4 @@
-const composeSafe = (...fns) => {
+const compose = (...fns) => {
   if (!fns.every(fn => typeof fn === 'function')) {
     throw new TypeError('All arguments must be functions');
   }
@@ -42,14 +42,14 @@ const inc = x => ++x;
 const twice = x => x * 2;
 const cube = x => x ** 3;
 
-const f1 = composeSafe(inc, twice, cube);
+const f1 = compose(inc, twice, cube);
 console.log(f1(5));
 
-const f2 = composeSafe(inc, inc);
+const f2 = compose(inc, inc);
 console.log(f2(7));
 
 try {
-  const h = composeSafe(inc, 7, cube);
+  const h = compose(inc, 7, cube);
 } catch (error) {
   console.log(error.message);
 }
