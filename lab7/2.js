@@ -5,6 +5,7 @@ const removeElements = (array, ...items) => {
     const index = array.indexOf(i);
     if (index !== -1) array.splice(index, 1);
   }
+  return array
 };
 
-console.log(removeElement(array1, 1, 2, 3));
+console.log(removeElements(array1, 1, 2, 3));
