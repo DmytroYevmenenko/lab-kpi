@@ -5,4 +5,4 @@ const removeElement = (array, item) => {
   if (index !== -1) array.splice(index, 1);
 };
 
-console.log(removeElement(array1, 2));
+console.log(removeElement(array1, 1, 2, 3));
