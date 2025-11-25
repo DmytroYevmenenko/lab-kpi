@@ -1,3 +1,5 @@
+'use strict';
+
 const pipe = (...fns) => {
     for (let i = 0; i < fns.length; i++) {
         if (typeof fns[i] !== 'function') {

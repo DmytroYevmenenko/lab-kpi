@@ -1,55 +1,42 @@
+'use strict';
+
 const compose = (...fns) => {
-  if (!fns.every(fn => typeof fn === 'function')) {
-    throw new TypeError('All arguments must be functions');
+  const errorHandlers = [];
+  
+
+  for (const fn of fns) {
+    if (typeof fn !== 'function') {
+      throw new Error('All arguments must be functions');
+    }
   }
-
-  const errorCallbacks = [];
-
+  
   const composed = (x) => {
-    let current = x;
-    for (let i = fns.length - 1; i >= 0; i--) {
-      try {
-        current = fns[i](current);
-      } catch (err) {
-        errorCallbacks.forEach(cb => cb(err));
-        return undefined;
+    if (fns.length === 0) return x;
+    
+    let result = x;
+    try {
+      for (let i = fns.length - 1; i >= 0; i--) {
+        result = fns[i](result);
       }
-    }
-    return current;
-  };
+      return result;
+    } catch (error) {
 
-  composed.on = (event, callback) => {
-    if (event === 'error' && typeof callback === 'function') {
-      errorCallbacks.push(callback);
+      errorHandlers.forEach(handler => {
+        try {
+          handler(error);
+        } catch (e) {}
+      });
+      return undefined;
+    }
+  };
+  
+
+  composed.on = (event, handler) => {
+    if (event === 'error' && typeof handler === 'function') {
+      errorHandlers.push(handler);
     }
     return composed;
   };
-
-  composed.off = (event, callback) => {
-    if (event === 'error') {
-      const index = errorCallbacks.indexOf(callback);
-      if (index !== -1) {
-        errorCallbacks.splice(index, 1);
-      }
-    }
-    return composed;
-  };
-
+  
   return composed;
 };
-
-const inc = x => ++x;
-const twice = x => x * 2;
-const cube = x => x ** 3;
-
-const f1 = compose(inc, twice, cube);
-console.log(f1(5));
-
-const f2 = compose(inc, inc);
-console.log(f2(7));
-
-try {
-  const h = compose(inc, 7, cube);
-} catch (error) {
-  console.log(error.message);
-}
